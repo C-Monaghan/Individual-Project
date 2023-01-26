@@ -2,7 +2,7 @@
 library(haven)
 library(dplyr)
 
-path_data <- "./01__Data/"
+path_data <- "./01__Data/HRS_2020/"
 
 # Reading in Section V of HRS 2020 Data
 demographics_r <- read_sav(file.path(path_data, "h20b_r.sav"))
