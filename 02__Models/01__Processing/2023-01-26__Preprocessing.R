@@ -2,22 +2,22 @@
 # These data is then filtered down to only focus on the participants that answered the procrastination scale in the Module V data file
 # All the relevant data in aggregated into one data file and outputted
 # -----------------------------------------------------------------------------
-library(haven)
 library(dplyr)
 
 path_data <- "./01__Data/01__Raw_data/HRS_2020/"
 
 # Reading in Data -------------------------------------------------------------
 # Tracker file containing information on each participant
-tracker <- read_sav("01__Data/01__Raw_data/Tracker.sav")
+tracker <- haven::read_sav("01__Data/01__Raw_data/Tracker.sav")
 
 # Relevant HRS data files from 2020
-demographics <- read_sav(file.path(path_data, "h20b_r.sav"))
-physical_health <- read_sav(file.path(path_data, "h20c_r.sav"))
-cognition <- read_sav(file.path(path_data, "h20d_r.sav"))
-leave_behind_q <- read_sav(file.path(path_data, "h20lb_r.sav"))
+demographics <- haven::read_sav(file.path(path_data, "h20b_r.sav"))
+physical_health <- haven::read_sav(file.path(path_data, "h20c_r.sav"))
+cognition <- haven::read_sav(file.path(path_data, "h20d_r.sav"))
+employement <- haven::read_sav(file.path(path_data, "h20j_r.sav"))
+leave_behind_q <- haven::read_sav(file.path(path_data, "h20lb_r.sav"))
 
-module_V <- read_sav(file.path(path_data, "h20v_r.sav")) # Experimental module with the procrastination data
+module_V <- haven::read_sav(file.path(path_data, "h20v_r.sav")) # Experimental module with the procrastination data
 
 # Filtration ------------------------------------------------------------------
 # Out of the 15723 participants in the data set only 1368 answered the procrastination scale
@@ -30,11 +30,14 @@ procrastination_participants_tracker <- inner_join(tracker, procrastination_part
 procrastination_participants_demographics <- inner_join(demographics, procrastination_participants, by = c("HHID", "PN"))
 procrastination_participants_physical_health <- inner_join(physical_health, procrastination_participants, by = c("HHID", "PN"))
 procrastination_participants_cognition <- inner_join(cognition, procrastination_participants, by = c("HHID", "PN"))
+procrastination_participants_employement <- inner_join(employement, procrastination_participants, by = c("HHID", "PN"))
 procrastination_participants_leave_behind <- inner_join(leave_behind_q, procrastination_participants, by = c("HHID", "PN"))
 
 # Creating singular data set of relevant data ----------------------------------
 hrs20_data <- cbind(procrastination_participants_tracker[, c("HHID", "PN", "GENDER", "BIRTHYR", "RAGE", "DEGREE", "SCHLYRS", 
                                                              "RMARST", "RLIVARR")],
+                    procrastination_participants_employement[, c("RJ005M1")],
+                    procrastination_participants_demographics[, c("RB000")],
                     procrastination_participants_physical_health[, c("RC001")],
                     procrastination_participants_cognition[, c("RD110", "RD111", "RD112", "RD113", "RD114", "RD115", "RD116", 
                                                                "RD117")],
@@ -44,7 +47,9 @@ hrs20_data <- cbind(procrastination_participants_tracker[, c("HHID", "PN", "GEND
                                                                   "RLB019F", "RLB019G", "RLB019H", "RLB019I", "RLB019J", 
                                                                   "RLB019K","RLB031E", "RLB031I", "RLB031N", "RLB031V", 
                                                                   "RLB031Z5", "RLB031X", "RLB031Z6", "RLB031D", "RLB031H",
-                                                                  "RLB031L", "RLB031Q")],
+                                                                  "RLB031L", "RLB031Q", "RLB002A", "RLB002B", "RLB002C", 
+                                                                  "RLB002D", "RLB002E", "RLB035C1", "RLB035C2", "RLB035C3",
+                                                                  "RLB035C4", "RLB035C5")],
                     procrastination_participants[, c(paste0("RV", 156:167))]
                     )
 
@@ -60,6 +65,8 @@ hrs20_data <- hrs20_data |>
     School_yrs = "SCHLYRS",
     Marital_status = "RMARST",
     Living_status = "RLIVARR",
+    Employement_status = "RJ005M1",
+    Life_satisfaction = "RB000",
     Perceived_health = "RC001",
     Depression_1 = "RD110",
     Depression_2 = "RD111",
@@ -101,6 +108,16 @@ hrs20_data <- hrs20_data |>
     Worrying = "RLB031H",
     Nervous = "RLB031L",
     Calm = "RLB031Q",
+    Life_satisfaction_1 = "RLB002A",
+    Life_satisfaction_2 = "RLB002B",
+    Life_satisfaction_3 = "RLB002C",
+    Life_satisfaction_4 = "RLB002D",
+    Life_satisfaction_5 = "RLB002E",
+    Anxiety_1 = "RLB035C1",
+    Anxiety_2 = "RLB035C2",
+    Anxiety_3 = "RLB035C3",
+    Anxiety_4 = "RLB035C4",
+    Anxiety_5 = "RLB035C5",
     Procras_1 = "RV156",
     Procras_2 = "RV157",
     Procras_3 = "RV158",
@@ -120,6 +137,9 @@ export_path <- "./01__Data/02__Processed_data/"
 
 
 # -----------------------------------------------------------------------------
-# Variable Notes
-# Stress is measured using the Cohen Perceived Stress Scale
-# Depression is measured using a modified 8-item version of the Center for Epidemiological Studies-Depression (CES-D 8)
+# Variable Notes: The following variables are measured using
+# Stress = Cohen Perceived Stress Scale
+# Depression = Modified 8-item version of the Center for Epidemiological Studies - Depression (CES-D 8)
+# Anxiety = Shortened 5-item version of the Beck Anxiety Inventory (BAI-5)
+# Life Satisfaction = Satisfaction With Life Scale (SWLS)
+# Procrastination = Pure Procrastination Scale (PPS)
