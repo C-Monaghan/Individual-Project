@@ -135,6 +135,8 @@ hrs20_data <- hrs20_data |>
 # Exporting -------------------------------------------------------------------
 export_path <- "./01__Data/02__Processed_data/"
 
+writexl::write_xlsx(hrs20_data, path = file.path(export_path, "HRS_2020_Data.xlsx"))
+
 
 # -----------------------------------------------------------------------------
 # Variable Notes: The following variables are measured using
