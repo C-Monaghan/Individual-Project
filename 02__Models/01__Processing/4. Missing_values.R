@@ -1,4 +1,6 @@
-# Write description
+# Certain variables in the HRS Data have preassigned missing values (-8, 8, 9, 98, 99)
+# These values are changed to the actual NA value to facilitate correct summation 
+# further down the line.
 # -----------------------------------------------------------------------------
 rm(list=ls()) # Clearing work space
 
