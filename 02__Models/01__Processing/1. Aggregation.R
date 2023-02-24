@@ -49,7 +49,8 @@ hrs20_data <- cbind(procrastination_participants_tracker[, c("HHID", "PN", "GEND
                                                                   "RLB031Z5", "RLB031X", "RLB031Z6", "RLB031D", "RLB031H",
                                                                   "RLB031L", "RLB031Q", "RLB002A", "RLB002B", "RLB002C", 
                                                                   "RLB002D", "RLB002E", "RLB035C1", "RLB035C2", "RLB035C3",
-                                                                  "RLB035C4", "RLB035C5")],
+                                                                  "RLB035C4", "RLB035C5", "RLB021A", "RLB021B", "RLB021C", 
+                                                                  "RLB021D", "RLB021E")],
                     procrastination_participants[, c(paste0("RV", 156:167))]
                     )
 
@@ -118,6 +119,11 @@ hrs20_data <- hrs20_data |>
     Anxiety_3 = "RLB035C3",
     Anxiety_4 = "RLB035C4",
     Anxiety_5 = "RLB035C5",
+    Self_control_1 = "RLB021A",
+    Self_control_2 = "RLB021B",
+    Self_control_3 = "RLB021C",
+    Self_control_4 = "RLB021D",
+    Self_control_5 = "RLB021E",
     Procras_1 = "RV156",
     Procras_2 = "RV157",
     Procras_3 = "RV158",
