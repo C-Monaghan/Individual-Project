@@ -1,0 +1,89 @@
+# The below code will create a Directed Acylic Graph (DAG) of the predictors of procrastination in older adults 
+# previously created using the online DAGitty software. This is done with the help of the ggdag package, which utlises
+# DAGitty to create and analyze structural causal models and plot them  using ggplot2 and ggraph in a consistent and easy manner
+# -----------------------------------------------------------------------------
+
+library(ggplot2)
+library(ggdag)
+
+# Creating DAG ----------------------------------------------------------------
+# Initially, the DAG was created in the online DAgitty software - the outputted code is then copied into R
+# ggdag is then used to tidy up the graph and add better structure
+# To better highlight the outcome variable, we use to dplyr to change the colour of the procrastination node
+
+project_dag <- dagitty::dagitty('dag {
+bb="-3.061,-3.755,2.929,3.852"
+"Health Assessment" [pos="-2.559,2.697"]
+"Life Satisfaction" [pos="-0.369,3.515"]
+"Living status" [pos="2.552,2.845"]
+"Marital Status" [pos="-0.303,-3.366"]
+"Physical Activity" [pos="-2.526,3.282"]
+"Self-Control" [pos="1.484,-2.783"]
+Age [exposure,pos="-2.865,0.303"]
+Anxiety [pos="0.736,2.834"]
+Conscientiousness [pos="-1.936,-3.046"]
+Depression [pos="0.713,1.301"]
+Education [pos="-0.640,-1.421"]
+Loneliness [pos="1.673,3.612"]
+Neuroticism [pos="-2.147,1.598"]
+Procrastination [outcome,pos="2.436,-0.068"]
+Retirement [pos="2.557,1.944"]
+Stress [pos="-1.987,-0.998"]
+"Health Assessment" -> "Life Satisfaction"
+"Life Satisfaction" -> Procrastination
+"Living status" -> Loneliness
+"Marital Status" -> "Life Satisfaction"
+"Marital Status" -> Depression
+"Marital Status" -> Loneliness [pos="2.586,-0.439"]
+"Marital Status" -> Procrastination [pos="1.094,-2.874"]
+"Physical Activity" -> "Life Satisfaction"
+"Self-Control" -> "Life Satisfaction" [pos="0.170,0.994"]
+"Self-Control" -> Procrastination [pos="2.204,-1.444"]
+Age -> "Life Satisfaction" [pos="-2.593,2.639"]
+Age -> Conscientiousness [pos="-2.421,-2.748"]
+Age -> Neuroticism
+Age -> Procrastination
+Anxiety -> "Life Satisfaction"
+Anxiety -> Loneliness
+Anxiety -> Procrastination [pos="2.210,1.849"]
+Conscientiousness -> "Life Satisfaction"
+Conscientiousness -> "Self-Control" [pos="-0.741,-3.202"]
+Conscientiousness -> Education
+Conscientiousness -> Procrastination
+Conscientiousness -> Stress [pos="-2.116,-1.415"]
+Depression -> "Life Satisfaction"
+Depression -> "Self-Control" [pos="1.612,-0.353"]
+Depression -> Procrastination
+Education -> "Life Satisfaction"
+Education -> Procrastination
+Loneliness -> "Life Satisfaction"
+Loneliness -> Depression [pos="1.796,2.056"]
+Loneliness -> Procrastination [pos="2.518,0.626"]
+Neuroticism -> "Life Satisfaction" [pos="-1.719,2.617"]
+Neuroticism -> "Marital Status" [pos="-1.222,-1.329"]
+Neuroticism -> Anxiety [pos="-0.933,2.833"]
+Neuroticism -> Depression
+Neuroticism -> Loneliness [pos="0.748,1.621"]
+Neuroticism -> Procrastination
+Neuroticism -> Stress [pos="-2.225,-0.344"]
+Retirement -> "Life Satisfaction" [pos="1.444,3.200"]
+Retirement -> Procrastination [pos="2.728,0.882"]
+Stress -> "Life Satisfaction" [pos="-0.825,2.781"]
+Stress -> "Self-Control" [pos="0.183,-2.296"]
+Stress -> Procrastination}') %>%
+  tidy_dagitty() %>%
+  dplyr::mutate(colour = ifelse(name == "Procrastination" | name == "Age", "Blue", "Red"))
+
+# Plotting DAG ----------------------------------------------------------------
+dag_graph <- project_dag %>%
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_node(aes(colour = colour), size = 20) +  
+  geom_dag_text(size = 2) +
+  geom_dag_edges(curvature = "quadratic", position = "jitter") +
+  theme_dag(legend.position = "none")
+
+# Exporting -------------------------------------------------------------------
+export_path <- "./02__Models/02__DAG/"
+
+cowplot::save_plot(file.path(export_path, "results/DAG.png"), dag_graph, 
+                   base_height = 8, base_aspect_ratio = 1.4)
