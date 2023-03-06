@@ -44,13 +44,13 @@ hrs20_data <- cbind(procrastination_participants_tracker[, c("HHID", "PN", "GEND
                     procrastination_participants_leave_behind[, c("RLB035B1", "RLB035B2", "RLB035B3", "RLB035B4", "RLB035B5", 
                                                                   "RLB035B6", "RLB035B7", "RLB035B8", "RLB035B9", "RLB035B10",
                                                                   "RLB019A", "RLB019B", "RLB019C", "RLB019D", "RLB019E",
-                                                                  "RLB019F", "RLB019G", "RLB019H", "RLB019I", "RLB019J", 
-                                                                  "RLB019K","RLB031E", "RLB031I", "RLB031N", "RLB031V", 
-                                                                  "RLB031Z5", "RLB031X", "RLB031Z6", "RLB031D", "RLB031H",
-                                                                  "RLB031L", "RLB031Q", "RLB002A", "RLB002B", "RLB002C", 
-                                                                  "RLB002D", "RLB002E", "RLB035C1", "RLB035C2", "RLB035C3",
-                                                                  "RLB035C4", "RLB035C5", "RLB021A", "RLB021B", "RLB021C", 
-                                                                  "RLB021D", "RLB021E")],
+                                                                  "RLB019F", "RLB019G", "RLB019H", "RLB019I", "RLB019J", "RLB019K", 
+                                                                  "RLB031C", "RLB031E", "RLB031I", "RLB031N", "RLB031R", 
+                                                                  "RLB031V", "RLB031X", "RLB031Z1", "RLB031Z5", "RLB031Z6", 
+                                                                  "RLB031D", "RLB031H", "RLB031L", "RLB031Q",
+                                                                  "RLB002A", "RLB002B", "RLB002C", "RLB002D", "RLB002E", 
+                                                                  "RLB035C1", "RLB035C2", "RLB035C3", "RLB035C4", "RLB035C5", "RLB021A", 
+                                                                  "RLB021B", "RLB021C", "RLB021D", "RLB021E")],
                     procrastination_participants[, c(paste0("RV", 156:167))]
                     )
 
@@ -98,17 +98,20 @@ hrs20_data <- hrs20_data |>
     UCLA_9 = "RLB019I",
     UCLA_10 = "RLB019J",
     UCLA_11 = "RLB019K",
+    Reckless = "RLB031C", # Start of Conscientiousness
     Organised = "RLB031E",
     Responsible = "RLB031I",
     Hardworking = "RLB031N",
+    Self_disiplined = "RLB031R",
     Careless = "RLB031V",
-    Thorough = "RLB031Z5",
     Impulsive = "RLB031X",
-    Thrifty = "RLB031Z6",
-    Moody = "RLB031D",
+    Cautious = "RLB031Z1",
+    Thorough = "RLB031Z5",
+    Thrifty = "RLB031Z6", # End of Conscientiousness
+    Moody = "RLB031D", # Start of Neuroticism
     Worrying = "RLB031H",
     Nervous = "RLB031L",
-    Calm = "RLB031Q",
+    Calm = "RLB031Q", # End of Neuroticism
     Life_satisfaction_1 = "RLB002A",
     Life_satisfaction_2 = "RLB002B",
     Life_satisfaction_3 = "RLB002C",
