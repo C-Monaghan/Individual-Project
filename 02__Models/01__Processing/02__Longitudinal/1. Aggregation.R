@@ -126,8 +126,9 @@ hrs_data <- hrs_data |>
   select(HHID, ID, Gender, Birth_year, Age, Education, School_yrs, Marital_status, Living_status,
          Life_satisfaction_w1, Life_satisfaction_w2, Reckless_w1, Reckless_w2, Organised_w1, Organised_w2,
          Responsible_w1, Responsible_w2, Hardworking_w1, Hardworking_w2, Self_disiplined_w1, Self_disiplined_w2,
-         Careless_w1, Careless_w2, Impulsive_w1, Impulsive_w2, Cautious_w1, Thorough_w1, Thorough_w2,
-         Thrifty_w1, Thrifty_w2, Moody_w1, Moody_w2, Worrying_w1, Worrying_w2, Nervous_w1, Nervous_w2,
+         Careless_w1, Careless_w2, Impulsive_w1, Impulsive_w2, Cautious_w1, Cautious_w2, Thorough_w1, Thorough_w2,
+         Thrifty_w1, Thrifty_w2, Moody_w1, Moody_w2, Worrying_w1, Worrying_w2, Nervous_w1, Nervous_w2, 
+         LS1_w1, LS1_w2, LS2_w1, LS2_w2, LS3_w1, LS3_w2, LS4_w1, LS4_w2, LS5_w1, LS5_w2,
          Procras_1, Procras_2, Procras_3, Procras_4, Procras_5, Procras_6, Procras_7, Procras_8, 
          Procras_9, Procras_10, Procras_11, Procras_12)
 
