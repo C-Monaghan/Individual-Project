@@ -5,15 +5,15 @@ rm(list=ls()) # Clearing work space
 path_data <- "./01__Data/02__Processed_data/"
 
 # Reading in data -------------------------------------------------------------
-hrs20_data <- readxl::read_xlsx(file.path(path_data, "HRS_2020_Data.xlsx"))
+hrs_data <- readxl::read_xlsx(file.path(path_data, "HRS_Data_Longitudinal.xlsx"))
 
 # Due to the leave behind questionnaire being answered only by certain participants
 # in certain waves we need a way to filter out the high prevalence of missing values
 # whilst still retaining data with smaller prevelances of missing values. To do this we 
 # will use the number of items in the personality scales (14). Participants with 14 or more 
-# missing values tended to be the participants who were not given the leave behind questionnaire
+# missing values tended to be the participants who were not given the leave behind questionnaire in both waves
 
-hrs20_data_reduced <- hrs20_data[rowSums(is.na(hrs20_data)) <= 14, ]
+hrs_data_reduced <- hrs_data[rowSums(is.na(hrs_data)) <= 14, ]
 
 # Creating Model --------------------------------------------------------------
 pp_model <- '
