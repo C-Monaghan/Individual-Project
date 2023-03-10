@@ -48,7 +48,7 @@ pp_model <- '
   Nervous_w2 ~~ Nervous_w2;
   Calm_w1 ~~ Calm_w2;
   
-  #INTERCEPTS
+  # Intercepts & Slopes
   inter_ls =~ 1*LS_w1 + 1*LS_w2
   slope_ls =~ 1*LS_w1 + 2*LS_w2
   
@@ -58,9 +58,21 @@ pp_model <- '
   inter_neu =~ 1*Neu_w1 + 1*Neu_w2
   slope_neu =~ 1*Neu_w1 + 2*Neu_w2
   
-  inter_procra =~ 1*Procra
+  inter_procra =~ 1*Procra # Do I need this??
+  slope_procra =~ 1*Procra # Do I need this??
   
-  # DIRECT EFFECT
-  inter_procra ~ age
+  # Direct Effect (check if doing right?)
+  slope_procra ~ Age
+  
+  # A Paths (check if doing right?)
+  slope_ls ~ a1*Age
+  slope_con ~ a2*Age
+  slope_neu ~ a3*Age
+  
+  # Do I need to do B paths??
+  
+  # Indirect effect (How??)
+  
+  # Total Effect (How??)
   
   '
