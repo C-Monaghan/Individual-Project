@@ -34,19 +34,19 @@ demographics_2020 <- inner_join(demographics_2020, procrastination_participants,
 leave_behind_q_2020 <- inner_join(leave_behind_q_2020, procrastination_participants, by = c("HHID", "PN"))
 
 # Since the 2016 & 2020 dataframes do not match in dimensions we need to filter down
-# to the same individual particpants
+# to the same individual participants
 tracker <- inner_join(tracker, demographics_2016, by = c("HHID", "PN"))
 demographics_2020 <- inner_join(demographics_2020, demographics_2016, by = c("HHID", "PN"))
 leave_behind_q_2020 <- inner_join(leave_behind_q_2020, leave_behind_q_2016, by = c("HHID", "PN"))
 
-# We also need to filter down the procrastination particpants
+# We also need to filter down the procrastination participants
 procrastination_participants <- inner_join(procrastination_participants, demographics_2016, by = c("HHID", "PN"))
 
 
 
 # Creating singular data set of relevant data ----------------------------------
 hrs_data <- cbind(
-  tracker[, c("HHID", "PN", "GENDER", "BIRTHYR", "RAGE", "DEGREE", "SCHLYRS", "RMARST", "RLIVARR")],
+  tracker[, c("HHID", "PN", "GENDER", "BIRTHYR", "PAGE", "RAGE", "DEGREE", "SCHLYRS", "RMARST", "RLIVARR")],
   demographics_2016[, c("PB000")],
   demographics_2020[, c("RB000")],
   leave_behind_q_2016[, c("PLB002A", "PLB002B", "PLB002C", "PLB002D", "PLB002E", 
@@ -65,7 +65,8 @@ hrs_data <- hrs_data |>
     ID = "PN",
     Gender = "GENDER",
     Birth_year = "BIRTHYR",
-    Age = "RAGE",
+    Age_2016 = "PAGE",
+    Age_2020 = "RAGE",
     Education = "DEGREE",
     School_yrs = "SCHLYRS",
     Marital_status = "RMARST",
@@ -123,7 +124,7 @@ hrs_data <- hrs_data |>
     Procras_11 = "RV166.x",
     Procras_12 = "RV167.x"
   ) |>
-  select(HHID, ID, Gender, Birth_year, Age, Education, School_yrs, Marital_status, Living_status,
+  select(HHID, ID, Gender, Birth_year, Age_2016, Age_2020, Education, School_yrs, Marital_status, Living_status,
          Life_satisfaction_w1, Life_satisfaction_w2, Reckless_w1, Reckless_w2, Organised_w1, Organised_w2,
          Responsible_w1, Responsible_w2, Hardworking_w1, Hardworking_w2, Self_disiplined_w1, Self_disiplined_w2,
          Careless_w1, Careless_w2, Impulsive_w1, Impulsive_w2, Cautious_w1, Cautious_w2, Thorough_w1, Thorough_w2,
