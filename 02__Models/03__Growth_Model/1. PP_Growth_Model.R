@@ -62,12 +62,12 @@ pp_model <- '
   slope_procra =~ 1*Procra # Do I need this??
   
   # Direct Effect (check if doing right?)
-  slope_procra ~ Age
+  slope_procra ~ Age_2016
   
   # A Paths (check if doing right?)
-  slope_ls ~ a1*Age
-  slope_con ~ a2*Age
-  slope_neu ~ a3*Age
+  slope_ls ~ a1*Age_2016
+  slope_con ~ a2*Age_2016
+  slope_neu ~ a3*Age_2016
   
   # Do I need to do B paths??
   
