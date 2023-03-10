@@ -9,7 +9,7 @@ hrs_data <- readxl::read_xlsx(file.path(path_data, "HRS_Data_Longitudinal.xlsx")
 # in certain waves we need a way to filter out the high prevalence of missing values
 # whilst still retaining data with smaller prevelances of missing values. To do this we 
 # will use the number of items in the personality scales (14). Participants with 14 or more 
-# missing values tended to be the participants who were not given the leave behind questionnaire in both waves
+# missing values tended to be the participants who were not given the leave behind questionnaire in all three waves
 
 hrs_data_reduced <- hrs_data[rowSums(is.na(hrs_data)) <= 14, ]
 
@@ -76,3 +76,4 @@ pp_model <- '
   # Total Effect (How??)
   
   '
+
