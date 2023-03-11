@@ -1,4 +1,9 @@
+# Some warning messages in model - need to come back and investigate
+
 rm(list=ls()) # Clearing work space
+
+library(lavaan)
+library(lavaanPlot)
 
 path_data <- "./01__Data/02__Processed_data/"
 
@@ -17,12 +22,12 @@ hrs_data_reduced <- hrs_data[rowSums(is.na(hrs_data)) <= 14, ]
 # Note: LS = Life Satisfaction // Con = Conscientiousness // Neu = Neuroticism // Procra = Procrastination
 pp_model <- '
   # Latent Variables:
-  LS_w1 =~ v1*LS1_w1 v2*LS2_w1 + v3*LS3_w1 + v4*LS4_w1 + v5*LS5_w1;
-  LS_w2 =~ v1*LS1_w2 v2*LS2_w2 + v3*LS3_w2 + v4*LS4_w2 + v5*LS5_w2;
-  Con_w1 =~ v6*Reckless_w1 + v7*Organised_w1 + v8*Responsible_w1 + v9*Hardworking_w1 + v10*Self_disiplined_w1 + v11*Careless_w1 + v12*Impulsive_w1 + v13*Cautious_w1 + v15*Thorough_w1 + v16*Thrifty_w1;
-  Con_w2 =~ v6*Reckless_w2 + v7*Organised_w2 + v8*Responsible_w2 + v9*Hardworking_w2 + v10*Self_disiplined_w2 + v11*Careless_w2 + v12*Impulsive_w2 + v13*Cautious_w2 + v15*Thorough_w2 + v16*Thrifty_w2;
-  Neu_w1 =~ v17*Moody_w1 + v18*Worrying_w1 + v19*Nervous_w1 + v20*Calm_w1;
-  Neu_w2 =~ v17*Moody_w2 + v18*Worrying_w2 + v19*Nervous_w2 + v20*Calm_w2;
+  LS_w1 =~ v1*LS1_w1 + v2*LS2_w1 + v3*LS3_w1 + v4*LS4_w1 + v5*LS5_w1;
+  LS_w2 =~ v1*LS1_w2 + v2*LS2_w2 + v3*LS3_w2 + v4*LS4_w2 + v5*LS5_w2;
+  Con_w1 =~ v6*Reckless_w1 + v7*Organised_w1 + v8*Responsible_w1 + v9*Hardworking_w1 + v10*Self_disiplined_w1 + v11*Careless_w1 + v12*Impulsive_w1 + v13*Cautious_w1 + v14*Thorough_w1 + v15*Thrifty_w1;
+  Con_w2 =~ v6*Reckless_w2 + v7*Organised_w2 + v8*Responsible_w2 + v9*Hardworking_w2 + v10*Self_disiplined_w2 + v11*Careless_w2 + v12*Impulsive_w2 + v13*Cautious_w2 + v14*Thorough_w2 + v15*Thrifty_w2;
+  Neu_w1 =~ v16*Moody_w1 + v17*Worrying_w1 + v18*Nervous_w1 + v19*Calm_w1;
+  Neu_w2 =~ v16*Moody_w2 + v17*Worrying_w2 + v18*Nervous_w2 + v19*Calm_w2;
   Procra =~ Procras_1 + Procras_2 + Procras_3 + Procras_4 + Procras_5 + Procras_6 + Procras_7 + Procras_8 + Procras_9 + Procras_10 + Procras_11 + Procras_12;
   
   # Residuals at different time points allowed to correlate: 
@@ -35,7 +40,7 @@ pp_model <- '
   Reckless_w1 ~~ Reckless_w2;
   Organised_w1 ~~ Organised_w2;
   Responsible_w1 ~~ Responsible_w2;
-  Hardworking_w1 ~~ Hardworking_w2#
+  Hardworking_w1 ~~ Hardworking_w2
   Self_disiplined_w1 ~~ Self_disiplined_w2;
   Careless_w1 ~~ Careless_w2;
   Impulsive_w1 ~~ Impulsive_w2;
@@ -45,7 +50,7 @@ pp_model <- '
   
   Moody_w1 ~~ Moody_w2;
   Worrying_w1 ~~ Worrying_w2;
-  Nervous_w2 ~~ Nervous_w2;
+  Nervous_w1 ~~ Nervous_w2;
   Calm_w1 ~~ Calm_w2;
   
   # Intercepts & Slopes
@@ -58,22 +63,38 @@ pp_model <- '
   inter_neu =~ 1*Neu_w1 + 1*Neu_w2
   slope_neu =~ 1*Neu_w1 + 2*Neu_w2
   
-  inter_procra =~ 1*Procra # Do I need this??
-  slope_procra =~ 1*Procra # Do I need this??
+  # Direct Effect
+  Procra ~ c*Age_w1 + b1*slope_con + b2*slope_neu + b3*slope_ls
   
-  # Direct Effect (check if doing right?)
-  slope_procra ~ Age_2016
+  # A Paths
+  slope_con ~ a1*Age_w1
+  slope_neu ~ a2*Age_w1
+  slope_ls ~ a3*Age_w1
   
-  # A Paths (check if doing right?)
-  slope_ls ~ a1*Age_2016
-  slope_con ~ a2*Age_2016
-  slope_neu ~ a3*Age_2016
+  # Indirect effect
   
-  # Do I need to do B paths??
+  Indirect_Effect := (a1*b1) + (a2*b2) + (a3*b3) 
   
-  # Indirect effect (How??)
+  # Total Effect
   
-  # Total Effect (How??)
+  Total_Effect := c + (a1*b1) + (a2*b2) + (a3*b3) 
   
   '
 
+# Latent Growth Model
+pp_model_fit <- growth(pp_model, data = hrs_data_reduced, 
+                       estimator = 'ML', missing = "fiml")
+
+summary(pp_model_fit, fit.measures = TRUE, standardized = TRUE, 
+                modindices = FALSE, rsquare = TRUE)
+
+# Making a SEM Plot (Check if better way to do this)
+sem_plot <- lavaanPlot(model = pp_model_fit,
+                       node_options = list(shape = "box", fontname = "Helvetica"),
+                       edge_options = list(color = "grey"),
+                       coefs = TRUE)
+
+# Exporting -------------------------------------------------------------------
+export_path <- "./02__Models/03__Growth_Model/"
+
+save_png(sem_plot, file.path(export_path, "Results/SEM_plot.png"))
