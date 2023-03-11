@@ -1,3 +1,5 @@
+rm(list=ls()) # Clearing work space
+
 path_data <- "./01__Data/01__Raw_data/"
 
 # Reading in Data -------------------------------------------------------------
@@ -20,7 +22,7 @@ mod_v <- haven::read_sav(file.path(path_data, "HRS_2020/Module_V_2020.sav")) # E
 # Filtration ------------------------------------------------------------------
 # Out of the 15723 participants in the data set only 1368 answered the procrastination scale
 mod_v <- mod_v|>
-  filter(!is.na(RV155))
+  dplyr::filter(!is.na(RV155))
 
 # Each data file is now filtered to only focus on those participants per wave
 # This is done by matching the HHID and PN numbers
@@ -51,7 +53,7 @@ mod_v <- dplyr::semi_join(mod_v, demo_w2, by = c("HHID", "PN"))
 
 # Creating singular data set of relevant data ----------------------------------
 hrs_data <- cbind(
-  tracker[, c("HHID", "PN", "GENDER", "BIRTHYR", "PAGE", "NAGE", "RAGE")],
+  tracker[, c("HHID", "PN", "GENDER", "BIRTHYR", "NAGE", "PAGE", "RAGE")],
   demo_w1[, c("NB000")], demo_w2[, c("PB000")], demo_w3[, c("RB000")],
   lbq_w1[, c("NLB003A", "NLB003B", "NLB003C", "NLB003D", "NLB003E", 
              "NLB033C", "NLB033E", "NLB033I", "NLB033N", "NLB033R", "NLB033V", "NLB033X", "NLB033Z", "NLB033Z_5", "NLB033Z_6",
@@ -75,10 +77,6 @@ hrs_data <- hrs_data |>
     Age_w1 = "NAGE",
     Age_w2 = "PAGE",
     Age_w3 = "RAGE",
-    Education = "DEGREE",
-    School_yrs = "SCHLYRS",
-    Marital_status = "RMARST",
-    Living_status = "RLIVARR",
     Life_satisfaction_w1 = "NB000",
     Life_satisfaction_w2 = "PB000",
     Life_satisfaction_w3 = "RB000",
@@ -151,18 +149,7 @@ hrs_data <- hrs_data |>
     Procras_10 = "RV165",
     Procras_11 = "RV166",
     Procras_12 = "RV167"
-  ) |>
-  select(HHID, ID, Gender, Birth_year, Age_w1, Age_w2, Age_w3, Life_satisfaction_w1, Life_satisfaction_w2, Life_satisfaction_w3,
-         Reckless_w1, Reckless_w2, Reckless_w3, Organised_w1, Organised_w2, Organised_w3,
-         Responsible_w1, Responsible_w2, Responsible_w3, Hardworking_w1, Hardworking_w2, Hardworking_w3,
-         Self_disiplined_w1, Self_disiplined_w2, Self_disiplined_w3, Careless_w1, Careless_w2, Careless_w3, 
-         Impulsive_w1, Impulsive_w2, Impulsive_w3, Cautious_w1, Cautious_w2, Cautious_w3, 
-         Thorough_w1, Thorough_w2, Thorough_w3, Thrifty_w1, Thrifty_w2, Thrifty_w3, 
-         Moody_w1, Moody_w2, Moody_w3, Worrying_w1, Worrying_w2, Worrying_w3, Nervous_w1, Nervous_w2, Nervous_w3,  
-         LS1_w1, LS1_w2, LS1_w3, LS2_w1, LS2_w2, LS2_w3, LS3_w1, LS3_w2, LS3_w3, 
-         LS4_w1, LS4_w2, LS4_w3, LS5_w1, LS5_w2, LS5_w3,
-         Procras_1, Procras_2, Procras_3, Procras_4, Procras_5, Procras_6, Procras_7, Procras_8, 
-         Procras_9, Procras_10, Procras_11, Procras_12)
+  )
 
 # Exporting -------------------------------------------------------------------
 export_path <- "./01__Data/02__Processed_data/"
