@@ -10,13 +10,15 @@ path_data <- "./01__Data/02__Processed_data/"
 # Reading in data -------------------------------------------------------------
 hrs_data <- readxl::read_xlsx(file.path(path_data, "HRS_Data_Longitudinal.xlsx"))
 
-# Due to the leave behind questionnaire being answered only by certain participants
-# in certain waves we need a way to filter out the high prevalence of missing values
-# whilst still retaining data with smaller prevelances of missing values. To do this we 
-# will use the number of items in the personality scales (14). Participants with 14 or more 
-# missing values tended to be the participants who were not given the leave behind questionnaire in all three waves
+# Attempts to handle the missing values ---------------------------------------
+# Removing all missing values (very strict)
+hrs_data_no_missing <- na.omit(hrs_data) # 237 Participants
 
-hrs_data_reduced <- hrs_data[rowSums(is.na(hrs_data)) <= 14, ]
+# Using the a fixed rate of missing based off personality questionnaire (quite strict) - see note 1
+hrs_data_reduced_1 <- hrs_data[rowSums(is.na(hrs_data)) <= 14, ] # 307 Participants
+
+# Using the cross wave rate of missingness in the life satisfaction (less strict) - see note 2
+hrs_data_reduced_2 <- hrs_data[rowSums(is.na(hrs_data[11:15])) < 5 | rowSums(is.na(hrs_data[30:34])) < 5, ] # 406 Participants
 
 # Creating Model --------------------------------------------------------------
 # Note: LS = Life Satisfaction // Con = Conscientiousness // Neu = Neuroticism // Procra = Procrastination
@@ -54,22 +56,22 @@ pp_model <- '
   Calm_w1 ~~ Calm_w2;
   
   # Intercepts & Slopes
-  inter_ls =~ 1*LS_w1 + 1*LS_w2
-  slope_ls =~ 1*LS_w1 + 2*LS_w2
+  inter_ls =~ 1*LS_w1 + 1*LS_w2;
+  slope_ls =~ 0*LS_w1 + 1*LS_w2;
   
-  inter_con =~ 1*Con_w1 + 1*Con_w2
-  slope_con =~ 1*Con_w1 + 2*Con_w2
+  inter_con =~ 1*Con_w1 + 1*Con_w2;
+  slope_con =~ 0*Con_w1 + 1*Con_w2;
   
-  inter_neu =~ 1*Neu_w1 + 1*Neu_w2
-  slope_neu =~ 1*Neu_w1 + 2*Neu_w2
+  inter_neu =~ 1*Neu_w1 + 1*Neu_w2;
+  slope_neu =~ 0*Neu_w1 + 1*Neu_w2;
   
   # Direct Effect
-  Procra ~ c*Age_w1 + b1*slope_con + b2*slope_neu + b3*slope_ls
+  Procra ~ c*Age_w1 + b1*slope_con + b2*slope_neu + b3*slope_ls;
   
   # A Paths
-  slope_con ~ a1*Age_w1
-  slope_neu ~ a2*Age_w1
-  slope_ls ~ a3*Age_w1
+  slope_con ~ a1*Age_w1;
+  slope_neu ~ a2*Age_w1;
+  slope_ls ~ a3*Age_w1;
   
   # Indirect effect
   
@@ -82,14 +84,15 @@ pp_model <- '
   '
 
 # Latent Growth Model
-pp_model_fit <- growth(pp_model, data = hrs_data_reduced, 
-                       estimator = 'ML', missing = "fiml")
+pp_model_fit_1 <- growth(pp_model, data = hrs_data_no_missing, estimator = 'ML', missing = "fiml")
+pp_model_fit_2 <- growth(pp_model, data = hrs_data_reduced_1, estimator = 'ML', missing = "fiml")
+pp_model_fit_3 <- growth(pp_model, data = hrs_data_reduced_2, estimator = 'ML', missing = "fiml")
 
-summary(pp_model_fit, fit.measures = TRUE, standardized = TRUE, 
-                modindices = FALSE, rsquare = TRUE)
+
+summary(pp_model_fit_2, fit.measures = TRUE, standardized = TRUE, modindices = FALSE, rsquare = TRUE)
 
 # Making a SEM Plot (Check if better way to do this)
-sem_plot <- lavaanPlot(model = pp_model_fit,
+sem_plot <- lavaanPlot(model = pp_model_fit_2,
                        node_options = list(shape = "box", fontname = "Helvetica"),
                        edge_options = list(color = "grey"),
                        coefs = TRUE)
@@ -98,3 +101,23 @@ sem_plot <- lavaanPlot(model = pp_model_fit,
 export_path <- "./02__Models/03__Growth_Model/"
 
 save_png(sem_plot, file.path(export_path, "Results/SEM_plot.png"))
+
+
+
+# Notes -----------------------------------------------------------------------
+
+# Note 1
+# Due to the leave behind questionnaire being answered only by certain participants
+# in certain waves we need a way to filter out the high prevalence of missing values
+# whilst still retaining data with smaller prevelances of missing values. To do this we 
+# will use the number of items in the personality scales (14). Participants with 14 or more 
+# missing values tended to be the participants who were not given the leave behind questionnaire in both waves
+
+# Note 2
+# If participants had 5 missing values in both life satisfaction wave 1 & 2 they were removed from analysis
+# This left participants who:
+# 1. Answered the questionnaire in both years
+# 2. Answered the questionnaire in 2012 but not 2016
+# 3. Answered the questionnaire in 2016 but not 2012
+
+# The overall hope was to use MICE to impute this missingness
