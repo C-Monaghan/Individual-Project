@@ -28,16 +28,7 @@ hrs_data <- hrs_data |>
   dplyr::mutate(Thrifty_w2 = personality_max + 1 - Thrifty_w2) |>
   dplyr::mutate(Moody_w2 = personality_max + 1 - Moody_w2) |>
   dplyr::mutate(Worrying_w2 = personality_max + 1 - Worrying_w2) |>
-  dplyr::mutate(Nervous_w2 = personality_max + 1 - Nervous_w2) |>
-  dplyr::mutate(Organised_w3 = personality_max + 1 - Organised_w3) |>
-  dplyr::mutate(Hardworking_w3 = personality_max + 1 - Hardworking_w3) |>
-  dplyr::mutate(Self_disiplined_w3 = personality_max + 1 - Self_disiplined_w3) |>
-  dplyr::mutate(Cautious_w3 = personality_max + 1 - Cautious_w3) |>
-  dplyr::mutate(Thorough_w3 = personality_max + 1 - Thorough_w3) |>
-  dplyr::mutate(Thrifty_w3 = personality_max + 1 - Thrifty_w3) |>
-  dplyr::mutate(Moody_w3 = personality_max + 1 - Moody_w3) |>
-  dplyr::mutate(Worrying_w3 = personality_max + 1 - Worrying_w3) |>
-  dplyr::mutate(Nervous_w3 = personality_max + 1 - Nervous_w3)
+  dplyr::mutate(Nervous_w2 = personality_max + 1 - Nervous_w2)
 
 # Exporting -------------------------------------------------------------------
 export_path <- "./01__Data/02__Processed_data/"

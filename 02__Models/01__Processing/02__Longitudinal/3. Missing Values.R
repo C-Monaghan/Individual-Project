@@ -11,7 +11,6 @@ hrs_data <- readxl::read_xlsx(file.path(path_data, "HRS_Data_Longitudinal.xlsx")
 
 # Replacing preassigned missing values integers with the actual NA value ------ 
 hrs_data <- hrs_data |>
-  dplyr::mutate(across(c(paste0("Life_satisfaction_w", 1:3)), ~ ifelse(. %in% 9, NA, .))) |>
   dplyr::mutate(across(c(paste0("Procras_", 1:12)), ~ ifelse(. %in% c(-8, 8, 9), NA, .)))
 
 # Exporting -------------------------------------------------------------------

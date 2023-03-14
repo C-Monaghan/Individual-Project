@@ -7,16 +7,12 @@ path_data <- "./01__Data/01__Raw_data/"
 tracker <- haven::read_sav(file.path(path_data, "Tracker.sav"))
 
 # HRS data (2012)
-demo_w1 <- haven::read_sav(file.path(path_data, "HRS_2012/Demographics_2012.sav"))
 lbq_w1 <- haven::read_sav(file.path(path_data, "HRS_2012/LB_Question_2012.sav"))
 
 # HRS data (2016)
-demo_w2 <- haven::read_sav(file.path(path_data, "HRS_2016/Demographics_2016.sav"))
 lbq_w2 <- haven::read_sav(file.path(path_data, "HRS_2016/LB_Question_2016.sav"))
 
 # HRS data (2020)
-demo_w3 <- haven::read_sav(file.path(path_data, "HRS_2020/Demographics_2020.sav"))
-lbq_w3 <- haven::read_sav(file.path(path_data, "HRS_2020/LB_Question_2020.sav"))
 mod_v <- haven::read_sav(file.path(path_data, "HRS_2020/Module_V_2020.sav")) # Experimental module with the procrastination data
 
 # Filtration ------------------------------------------------------------------
@@ -28,42 +24,27 @@ mod_v <- mod_v|>
 # This is done by matching the HHID and PN numbers
 tracker <- dplyr::semi_join(tracker, mod_v, by = c("HHID", "PN"))
 
-# 2012 Data -------------------------------------------------------------------
-demo_w1 <- dplyr::semi_join(demo_w1, mod_v, by = c("HHID", "PN"))
-lbq_w1 <- dplyr::semi_join(lbq_w1, mod_v, by = c("HHID", "PN"))
-
-# 2016 Data -------------------------------------------------------------------
-demo_w2 <- dplyr::semi_join(demo_w2, mod_v, by = c("HHID", "PN"))
-lbq_w2 <- dplyr::semi_join(lbq_w2, mod_v, by = c("HHID", "PN"))
-
-# 2020 Data -------------------------------------------------------------------
-demo_w3 <- dplyr::semi_join(demo_w3, mod_v, by = c("HHID", "PN"))
-lbq_w3 <- dplyr::semi_join(lbq_w3, mod_v, by = c("HHID", "PN"))
+lbq_w1 <- dplyr::semi_join(lbq_w1, mod_v, by = c("HHID", "PN")) # 2012
+lbq_w2 <- dplyr::semi_join(lbq_w2, mod_v, by = c("HHID", "PN")) # 2016
 
 # Since the data frames do not match in dimensions we need to filter down to the 
 # exact participants per wave with the smallest dimension
-demo_w2 <- dplyr::semi_join(demo_w2, lbq_w1, by = c("HHID", "PN"))
-tracker <- dplyr::semi_join(tracker, demo_w2, by = c("HHID", "PN"))
-demo_w1 <- dplyr::semi_join(demo_w1, demo_w2, by = c("HHID", "PN"))
-demo_w3 <- dplyr::semi_join(demo_w3, demo_w2, by = c("HHID", "PN"))
-lbq_w1 <- dplyr::semi_join(lbq_w1, demo_w2, by = c("HHID", "PN"))
-lbq_w2 <- dplyr::semi_join(lbq_w2, demo_w2, by = c("HHID", "PN"))
-lbq_w3 <- dplyr::semi_join(lbq_w3, demo_w2, by = c("HHID", "PN"))
-mod_v <- dplyr::semi_join(mod_v, demo_w2, by = c("HHID", "PN"))
+lbq_w2 <- dplyr::semi_join(lbq_w2, lbq_w1, by = c("HHID", "PN"))
+lbq_w1 <- dplyr::semi_join(lbq_w1, lbq_w2, by = c("HHID", "PN"))
+
+
+tracker <- dplyr::semi_join(tracker, lbq_w2, by = c("HHID", "PN"))
+mod_v <- dplyr::semi_join(mod_v, lbq_w2, by = c("HHID", "PN"))
 
 # Creating singular data set of relevant data ----------------------------------
 hrs_data <- cbind(
   tracker[, c("HHID", "PN", "GENDER", "BIRTHYR", "NAGE", "PAGE", "RAGE")],
-  demo_w1[, c("NB000")], demo_w2[, c("PB000")], demo_w3[, c("RB000")],
   lbq_w1[, c("NLB003A", "NLB003B", "NLB003C", "NLB003D", "NLB003E", 
              "NLB033C", "NLB033E", "NLB033I", "NLB033N", "NLB033R", "NLB033V", "NLB033X", "NLB033Z", "NLB033Z_5", "NLB033Z_6",
              "NLB033D", "NLB033H", "NLB033L", "NLB033Q")],
   lbq_w2[, c("PLB002A", "PLB002B", "PLB002C", "PLB002D", "PLB002E",
              "PLB031C", "PLB031E", "PLB031I", "PLB031N", "PLB031R", "PLB031V", "PLB031X", "PLB031Z_1", "PLB031Z_5", "PLB031Z_6",
              "PLB031D", "PLB031H", "PLB031L", "PLB031Q")],
-  lbq_w3[, c("RLB002A", "RLB002B", "RLB002C", "RLB002D", "RLB002E",
-             "RLB031C", "RLB031E", "RLB031I", "RLB031N", "RLB031R", "RLB031V", "RLB031X", "RLB031Z1", "RLB031Z5", "RLB031Z6",
-             "RLB031D", "RLB031H", "RLB031L", "RLB031Q")],
   mod_v[, c(paste0("RV", 156:167))]
   )
 
@@ -77,9 +58,6 @@ hrs_data <- hrs_data |>
     Age_w1 = "NAGE",
     Age_w2 = "PAGE",
     Age_w3 = "RAGE",
-    Life_satisfaction_w1 = "NB000",
-    Life_satisfaction_w2 = "PB000",
-    Life_satisfaction_w3 = "RB000",
     Reckless_w1 = "NLB033C", # Conscientiousness (Wave 1)
     Organised_w1 = "NLB033E",
     Responsible_w1 = "NLB033I",
@@ -108,20 +86,6 @@ hrs_data <- hrs_data |>
     Worrying_w2 = "PLB031H",
     Nervous_w2 = "PLB031L",
     Calm_w2 = "PLB031Q",
-    Reckless_w3 = "RLB031C", # Conscientiousness (Wave 3)
-    Organised_w3 = "RLB031E",
-    Responsible_w3 = "RLB031I",
-    Hardworking_w3 = "RLB031N",
-    Self_disiplined_w3 = "RLB031R",
-    Careless_w3 = "RLB031V",
-    Impulsive_w3 = "RLB031X",
-    Cautious_w3 = "RLB031Z1",
-    Thorough_w3 = "RLB031Z5",
-    Thrifty_w3 = "RLB031Z6",
-    Moody_w3 = "RLB031D", # Neuroticism (Wave 3)
-    Worrying_w3 = "RLB031H",
-    Nervous_w3 = "RLB031L",
-    Calm_w3 = "RLB031Q",
     LS1_w1 = "NLB003A", # Life Satisfaction (Wave 1)
     LS2_w1 = "NLB003B",
     LS3_w1 = "NLB003C",
@@ -132,11 +96,6 @@ hrs_data <- hrs_data |>
     LS3_w2 = "PLB002C",
     LS4_w2 = "PLB002D",
     LS5_w2 = "PLB002E",
-    LS1_w3 = "RLB002A", # Life Satisfaction (Wave 3)
-    LS2_w3 = "RLB002B",
-    LS3_w3 = "RLB002C",
-    LS4_w3 = "RLB002D",
-    LS5_w3 = "RLB002E",
     Procras_1 = "RV156", # Procrastination (Wave 3)
     Procras_2 = "RV157",
     Procras_3 = "RV158",
